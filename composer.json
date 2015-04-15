@@ -1,0 +1,21 @@
+{
+    "name": "romainbruckert/php-iron-mq",
+    "type": "library",
+    "description": "PHP SDK for IronMQ",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Romain BRUCKERT",
+            "email": "romain.bruckert.esc@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability":"dev",
+    "require": {
+        "php": ">=5.3",
+        "lib-curl": "*"
+    },
+    "autoload": {
+        "classmap": ["lib/"]
+    }
+}
