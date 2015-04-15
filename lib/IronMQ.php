@@ -43,7 +43,7 @@ class IronMQ
 
 		$this->apiUrl = "https://mq-aws-us-east-1.iron.io/1/projects";
 	}
-
+	
 	/**
 	 * 
 	 *
@@ -63,7 +63,7 @@ class IronMQ
 	{
 		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/messages";
 
-		return $this->curl($url, "GET");
+		return $this->curlRequest($url, "GET");
 	}
 
 
@@ -75,7 +75,7 @@ class IronMQ
 	{
 		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/messages";
 
-		return $this->curl($url, "POST", $message);
+		return $this->curlRequest($url, "POST", $message);
 	}
 
 
@@ -87,7 +87,7 @@ class IronMQ
 	{
 		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/messages/{$messageId}";
 
-		return $this->curl($url, "DELETE");
+		return $this->curlRequest($url, "DELETE");
 	}
 
 
@@ -95,7 +95,32 @@ class IronMQ
 	 * Make a GET, POST or DELETE CURL request
 	 * 
 	 */
-	public function curl($url, $verb = "GET", $messageData = array())
+	public function formatMessage($messageData)
+	{
+		if(is_string($messageData)) {
+
+			return $messageData;
+
+		} elseif(is_numeric($messageData)) {
+
+			return (string) $messageData;
+
+		} elseif(is_object($messageData) OR is_array($messageData)) {
+
+			return json_encode($messageData);
+
+		} else
+		{
+			return $messageData;
+		}
+	}
+
+
+	/**
+	 * Make a GET, POST or DELETE CURL request
+	 * 
+	 */
+	public function curlRequest($url, $verb = "GET", $messageData = array())
 	{
 		// check project key 
 		if(empty($this->projectKey)) {
@@ -114,9 +139,9 @@ class IronMQ
 		));
 
 		if($verb === "POST") {
-			
+
 			$postBody = array(
-				'messages' => array( array('body' => $messageData) )
+				'messages' => array( array('body' => $this->formatMessage($messageData)) )
 			);
 
 			curl_setopt_array($curl, array(

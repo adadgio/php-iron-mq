@@ -19,7 +19,7 @@ $ironMQ->setProject($config['projectKey']);
  * 2. Post a message
  *
  */
-$response = $ironMQ->post('my_queue', 'Hello world');
+$response = $ironMQ->post('my_queue', array('test' => "YO"));
 
 echo "POST ====<br>";
 var_dump($response);
