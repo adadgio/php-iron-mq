@@ -11,14 +11,13 @@ use RomainBruckert\IronMQ\IronMQ;
 /**
  * 1. Setup
  */
-$ironMQ = new IronMQ($config['apiKey']);
-$ironMQ->setProject($config['projectKey']);
-
+$ironMQ = new IronMQ($config['apiKey'], $config['projectKey']);
 
 /**
  * 2. Post a message
  *
  */
+$ironMQ->setSubscriber(array('url' => 'http://test.com'));
 $response = $ironMQ->post('my_queue', array('test' => "YO"));
 
 echo "POST ====<br>";
