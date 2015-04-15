@@ -13,12 +13,16 @@ use RomainBruckert\IronMQ\IronMQ;
  */
 $ironMQ = new IronMQ($config['apiKey'], $config['projectKey']);
 
+$response = $ironMQ->addSubscriber('my_queue', array('url' => 'http://test.com'));
+
+$response = $ironMQ->removeSubscriber('my_queue', array('url' => 'http://test.com'));
+
+
 /**
  * 2. Post a message
  *
  */
-$ironMQ->setSubscriber(array('url' => 'http://test.com'));
-$response = $ironMQ->post('my_queue', array('test' => "YO"));
+$response = $ironMQ->postOne('my_queue', array('test' => "YO"));
 
 echo "POST ====<br>";
 var_dump($response);

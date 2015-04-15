@@ -51,17 +51,6 @@ class IronMQ
 
 		$this->apiUrl = "https://mq-aws-us-east-1.iron.io/1/projects";
 	}
-	
-	/**
-	 * 
-	 * 
-	 */
-	public function setSubscriber($subscriber)
-	{
-		$this->subscribers[] = $subscriber;
-
-		return $this;
-	}
 
 	/**
 	 * 
@@ -79,11 +68,35 @@ class IronMQ
 	 * 
 	 *
 	 */
-	public function post($queue, $message)
+	public function postOne($queue, $message)
 	{
 		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/messages";
 
-		return $this->curlRequest($url, "POST", $message);
+		$options = array(
+			'messages' => array(
+				array('body' => $this->format($message))
+			)
+		);
+
+		return $this->curlRequest($url, "POST", $options);
+	}
+
+
+	/**
+	 * 
+	 *
+	 */
+	public function postMany($queue, $messages = array())
+	{
+		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/messages";
+
+		$options = array('messages' => array());
+
+		foreach($messages as $message) {
+			$options['messages'][] = array('body' => $this->format($message));
+		}
+
+		return $this->curlRequest($url, "POST", $options);
 	}
 
 
@@ -97,13 +110,41 @@ class IronMQ
 
 		return $this->curlRequest($url, "DELETE");
 	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public function addSubscriber($queue, $subscriber)
+	{
+		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/subscribers";
+
+		$options = array(
+			'subscribers' => array(
+				$subscriber
+			)
+		);
+
+		return $this->curlRequest($url, "POST", $options);
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public function removeSubscriber($queue, $subscriber)
+	{
+		$url = $this->apiUrl."/{$this->projectKey}/queues/{$queue}/subscribers";
+		
+		return $this->curlRequest($url, "DELETE", array('subscribers' => array($subscriber)));
+	}
 
 
 	/**
 	 * Make a GET, POST or DELETE CURL request
 	 * 
 	 */
-	public function formatMessage($messageData)
+	public function format($messageData)
 	{
 		if(is_string($messageData)) {
 
@@ -128,7 +169,7 @@ class IronMQ
 	 * Make a GET, POST or DELETE CURL request
 	 * 
 	 */
-	public function curlRequest($url, $verb = "GET", $messageData = array())
+	public function curlRequest($url, $verb = "GET", $options = array())
 	{
 		// check project key 
 		if(empty($this->projectKey)) {
@@ -145,27 +186,22 @@ class IronMQ
 				"Authorization: OAuth {$this->apiKey}"
 			)
 		));
-
+		
 		if($verb === "POST") {
 
-			$postBody = array();
-
-			$postBody['messages'] = array( array('body' => $this->formatMessage($messageData)) );
-
-			if(!empty($this->subscribers)) {
-				$postBody['subscribers'] = $this->subscribers;
+			curl_setopt($curl, CURLOPT_POST, 1);
+			
+			if(!empty($options)) {
+				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($options));
 			}
-
-			curl_setopt_array($curl, array(
-				CURLOPT_POST => 1,
-				CURLOPT_POSTFIELDS => json_encode($postBody)
-			));
 
 		} elseif($verb === "DELETE") {
 
-			curl_setopt_array($curl, array(
-				CURLOPT_CUSTOMREQUEST => "DELETE",
-			));
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+			if(!empty($options)) {
+				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($options));
+			}
 
 		} else
 		{
