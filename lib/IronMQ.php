@@ -28,6 +28,12 @@ class IronMQ
 	 */
 	private $projectKey;
 
+
+	/**
+	 * Your IronMQ subscribers information
+	 */
+	private $subscribers;
+
 	/**
 	 *
 	 */
@@ -37,20 +43,22 @@ class IronMQ
 	 * 
 	 *
 	 */
-	public function __construct($apiKey)
+	public function __construct($apiKey, $projectKey)
 	{
 		$this->apiKey = $apiKey;
+
+		$this->projectKey = $projectKey;
 
 		$this->apiUrl = "https://mq-aws-us-east-1.iron.io/1/projects";
 	}
 	
 	/**
 	 * 
-	 *
+	 * 
 	 */
-	public function setProject($projectKey)
+	public function setSubscriber($subscriber)
 	{
-		$this->projectKey = $projectKey;
+		$this->subscribers[] = $subscriber;
 
 		return $this;
 	}
@@ -140,9 +148,13 @@ class IronMQ
 
 		if($verb === "POST") {
 
-			$postBody = array(
-				'messages' => array( array('body' => $this->formatMessage($messageData)) )
-			);
+			$postBody = array();
+
+			$postBody['messages'] = array( array('body' => $this->formatMessage($messageData)) );
+
+			if(!empty($this->subscribers)) {
+				$postBody['subscribers'] = $this->subscribers;
+			}
 
 			curl_setopt_array($curl, array(
 				CURLOPT_POST => 1,
