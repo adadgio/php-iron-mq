@@ -39,17 +39,22 @@ class IronMQ
 	 */
 	protected $errors = array();
 
+	
 	/**
 	 * 
-	 *
+	 * 
 	 */
-	public function __construct($apiKey, $projectKey)
+	public function __construct($config = array())
 	{
-		$this->apiKey = $apiKey;
+		if(!isset($config['api_url']) OR !isset($config['api_key']) OR !isset($config['project_key'])) {
+			throw new Exception("Config requires three valid parameters: <api_url>, <api_key> and <project_key>.");
+		}
 
-		$this->projectKey = $projectKey;
+		$this->apiUrl = $config['api_url'];
 
-		$this->apiUrl = "https://mq-aws-us-east-1.iron.io/1/projects";
+		$this->apiKey = $config['api_key'];
+
+		$this->projectKey = $config['project_key'];
 	}
 
 	/**
