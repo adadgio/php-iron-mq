@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 require_once('../test/config.php'); 	// personal config not in repository
 require_once(__DIR__.'/../lib/IronMQ.php'); // autoloads BoxApi by itself
 
-use RomainBruckert\IronMQ\IronMQ;
+use Adadgio\IronMQ\IronMQ;
 
 
 /**

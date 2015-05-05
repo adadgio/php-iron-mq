@@ -1,6 +1,6 @@
 <?php
 
-namespace RomainBruckert\IronMQ;
+namespace Adadgio\IronMQ;
 
 use Exception;
 
