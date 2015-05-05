@@ -1,7 +1,7 @@
 {
-    "name": "romainbruckert/php-iron-mq",
+    "name": "adadgio/php-iron-mq",
     "type": "library",
-    "description": "PHP SDK for IronMQ",
+    "description": "A PHP Symfony SDK for IronMQ",
     "license": "MIT",
     "authors": [
         {
